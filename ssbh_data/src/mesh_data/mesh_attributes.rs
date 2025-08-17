@@ -1039,7 +1039,7 @@ mod tests {
         )];
         write_attributes(&buffer_info, &mut [&mut buffer0], &[0]).unwrap();
 
-        assert_hex_eq!(buffer0.get_ref(), &hex!(0000803F 00000040 00004040));
+        assert_hex_eq!(&hex!(0000803F 00000040 00004040), buffer0.get_ref());
     }
 
     #[test]
@@ -1051,7 +1051,7 @@ mod tests {
         )];
         write_attributes(&buffer_info, &mut [&mut buffer0], &[0]).unwrap();
 
-        assert_hex_eq!(buffer0.get_ref(), &hex!(0000803F 00000040 00004040));
+        assert_hex_eq!(&hex!(0000803F 00000040 00004040), buffer0.get_ref());
     }
 
     #[test]
@@ -1082,7 +1082,6 @@ mod tests {
         write_attributes(&buffer_info, &mut [&mut buffer0, &mut buffer1], &[4, 8]).unwrap();
 
         assert_hex_eq!(
-            buffer0.get_ref(),
             &hex!(
                 // Offset
                 00000000
@@ -1090,10 +1089,10 @@ mod tests {
                 0000803F 0000803F 0000803F 00000040 00000040 00004040 00004040 00004040 00004040
                 // Vertex 1
                 00000000 00000000 00000000 00000040 00000040 00004040 00004040 00004040 00004040
-            )
+            ),
+            buffer0.get_ref()
         );
         assert_hex_eq!(
-            buffer1.get_ref(),
             &hex!(
                 // Offset
                 00000000 00000000
@@ -1102,7 +1101,8 @@ mod tests {
                 // Vertex 1
                 // The last vertex isn't padded to stride.
                 02000200 02000200 04040404
-            )
+            ),
+            buffer1.get_ref()
         );
     }
 
@@ -1137,7 +1137,6 @@ mod tests {
         write_attributes(&buffer_info, &mut [&mut buffer0, &mut buffer1], &[4, 8]).unwrap();
 
         assert_hex_eq!(
-            buffer0.get_ref(),
             &hex!(
                 // Offset
                 00000000
@@ -1145,10 +1144,10 @@ mod tests {
                 0000803F 0000803F 0000803F 00400040 00004040 00004040 00004040 00004040
                 // Vertex 1
                 00000000 00000000 00000000 00400040 00004040 00004040 00004040 00004040
-            )
+            ),
+            buffer0.get_ref()
         );
         assert_hex_eq!(
-            buffer1.get_ref(),
             &hex!(
                 // Offset
                 00000000 00000000
@@ -1157,7 +1156,8 @@ mod tests {
                 // Vertex 1
                 // The last vertex isn't padded to stride.
                 02000200 02000200 04040404
-            )
+            ),
+            buffer1.get_ref()
         );
     }
 }

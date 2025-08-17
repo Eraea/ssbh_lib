@@ -371,7 +371,7 @@ mod tests {
         )
         .unwrap();
 
-        assert_hex_eq!(writer.get_ref(), &hex!(cdcccc3e 0000c03f 0000803f 0000803f));
+        assert_hex_eq!(&hex!(cdcccc3e 0000c03f 0000803f 0000803f), writer.get_ref());
     }
 
     #[test]
@@ -424,8 +424,8 @@ mod tests {
         .unwrap();
 
         assert_hex_eq!(
-            writer.get_ref(),
-            &hex!(0000803f 0000803f 00000000 00000000 00000000)
+            &hex!(0000803f 0000803f 00000000 00000000 00000000),
+            writer.get_ref()
         );
     }
 
@@ -831,7 +831,6 @@ mod tests {
         // TODO: How to determine a good default value?
         // TODO: Check more examples to see if default is just the min.
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 // header
                 04000d00 60007800 74000000 02000000
@@ -848,7 +847,8 @@ mod tests {
                 // compressed values
                 000000 000000 000000 000000 000000
                 FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
@@ -887,7 +887,6 @@ mod tests {
         // TODO: How to determine a good default value?
         // TODO: Check more examples to see if default is just the min.
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 // header
                 04000f00 60006000 74000000 02000000
@@ -904,7 +903,8 @@ mod tests {
                 // compressed values
                 000000 000000 000000 000000
                 FFFFFF FFFFFF FFFFFF FFFFFF
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
@@ -1097,13 +1097,13 @@ mod tests {
         .unwrap();
 
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 04000000 20001800 24000000 02000000 // header
                 0000003F 00000040 18000000 00000000 // compression
                 0000003F                            // default value
                 000000 FFFFFF                       // compressed values
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
@@ -1205,12 +1205,12 @@ mod tests {
         .unwrap();
 
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 04000000 20000100 21000000 01000000 // header
                 00000000 00000000 00000000 00000000 // bool compression (always 0's)
                 0001                                // compressed values (bits)
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
@@ -1232,12 +1232,12 @@ mod tests {
         .unwrap();
 
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 04000000 20000100 21000000 03000000 // header
                 00000000 00000000 00000000 00000000 // bool compression (always 0's)
                 0006                                // compressed values (bits)
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
@@ -1260,12 +1260,12 @@ mod tests {
         .unwrap();
 
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 04000000 20000100 21000000 0B000000 // header
                 00000000 00000000 00000000 00000000 // bool compression (always 0's)
                 00FF07                              // compressed values (bits)
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
@@ -1377,7 +1377,6 @@ mod tests {
         .unwrap();
 
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 // header
                 04000000 50006000 60000000 02000000
@@ -1390,7 +1389,8 @@ mod tests {
                 000080BF 000000C0 000040C0 000080C0
                 // compressed values
                 000000 000000 000000 000000 FFFFFF FFFFFF FFFFFF FFFFFF
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
@@ -1415,7 +1415,6 @@ mod tests {
         .unwrap();
 
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 // header
                 04000000 50001800 60000000 02000000
@@ -1428,7 +1427,8 @@ mod tests {
                 0000803F 00000040 00004040 000080C0
                 // compressed values
                 000000 FFFFFF
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
@@ -1488,13 +1488,13 @@ mod tests {
         .unwrap();
 
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 0000803f 0000803f 0000803f          // scale
                 00000000 00000000 00000000          // translation
                 0000803f bea4c13f_79906ebe f641bebe // rotation
                 01000000                            // compensate scale
-            )
+            ),
+            writer.get_ref()
         );
     }
 
@@ -1717,7 +1717,6 @@ mod tests {
         // TODO: How to determine a good default value?
         // TODO: Check more examples to see if default is just the min.
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 // header
                 04000d00 a000d900 cc000000 02000000
@@ -1741,7 +1740,8 @@ mod tests {
                 // compressed values
                 000000 000000 000000 000000 000000 000000 000000 000000 000000
                 FEFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF 01
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
@@ -2429,7 +2429,6 @@ mod tests {
         .unwrap();
 
         assert_hex_eq!(
-            writer.get_ref(),
             &hex!(
                 // header
                 04000f00 a000a900 cc000000 02000000
@@ -2453,7 +2452,8 @@ mod tests {
                 // compressed values
                 000000 000000 000000 000000 000000 000000 000000
                 FEFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF FFFFFF 01
-            )
+            ),
+            writer.get_ref()
         );
 
         assert_eq!(
