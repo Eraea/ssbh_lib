@@ -362,10 +362,9 @@ fn write_aligned_after(write_options: &WriteOptions) -> TokenStream2 {
         Some(num_bytes) => quote! {
             // Check for divide by 0.
             if #num_bytes > 0 {
-                let round_up = |value, n| ((value + n - 1) / n) * n;
                 // TODO: Is seeking from the end always correct?
                 let current_pos = writer.seek(std::io::SeekFrom::End(0))?;
-                let aligned_pos = round_up(current_pos, #num_bytes as u64);
+                let aligned_pos = current_pos.next_multiple_of(#num_bytes as u64);
                 for _ in 0..(aligned_pos - current_pos) {
                     writer.write_all(&[0u8])?;
                 }

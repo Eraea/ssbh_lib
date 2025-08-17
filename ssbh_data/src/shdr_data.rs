@@ -391,7 +391,7 @@ fn read_string<R: Read + Seek>(
 }
 
 impl TryFrom<Shdr> for ShdrData {
-    type Error = std::convert::Infallible;
+    type Error = binrw::Error;
 
     fn try_from(shdr: Shdr) -> Result<Self, Self::Error> {
         Self::try_from(&shdr)
@@ -399,7 +399,7 @@ impl TryFrom<Shdr> for ShdrData {
 }
 
 impl TryFrom<&Shdr> for ShdrData {
-    type Error = std::convert::Infallible;
+    type Error = binrw::Error;
 
     fn try_from(shdr: &Shdr) -> Result<Self, Self::Error> {
         // TODO: Rebuild Shdr from ShdrData?
@@ -411,14 +411,14 @@ impl TryFrom<&Shdr> for ShdrData {
                     .iter()
                     .map(|s| {
                         let mut reader = Cursor::new(&s.shader_binary.elements);
-                        let shader: ShaderBinary = reader.read_le().unwrap();
-                        ShaderEntryData {
+                        let shader: ShaderBinary = reader.read_le()?;
+                        Ok(ShaderEntryData {
                             name: s.name.to_string_lossy(),
                             shader_stage: s.shader_stage,
                             meta_data: Metadata::new(&mut reader, &shader),
-                        }
+                        })
                     })
-                    .collect(),
+                    .collect::<BinResult<_>>()?,
             },
         })
     }

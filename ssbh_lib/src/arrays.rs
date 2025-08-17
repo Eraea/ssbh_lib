@@ -10,7 +10,7 @@ use binrw::{
 use serde::{Deserialize, Serialize};
 use ssbh_write::SsbhWrite;
 
-use crate::{absolute_offset_checked, round_up, write_relative_offset};
+use crate::{absolute_offset_checked, write_relative_offset};
 
 // Array element types vary in size, so pick a more consersative value.
 const SSBH_ARRAY_MAX_INITIAL_CAPACITY: usize = 1024;
@@ -295,7 +295,7 @@ fn write_array_header<W: Write + Seek>(
     count: usize,
 ) -> std::io::Result<()> {
     // Arrays are always 8 byte aligned.
-    *data_ptr = round_up(*data_ptr, 8);
+    *data_ptr = data_ptr.next_multiple_of(8);
 
     // Don't write the offset for empty arrays.
     if count == 0 {

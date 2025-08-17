@@ -1,5 +1,5 @@
 //! Types for working with [Hlpb] data in .nuhlpb files.
-use std::iter::repeat;
+use std::iter::repeat_n;
 
 use ssbh_lib::{formats::hlpb::*, Vector3, Vector4};
 
@@ -96,9 +96,11 @@ impl From<&HlpbData> for Hlpb {
             constraint_indices: (0..data.aim_constraints.len() as u32)
                 .chain(0..data.orient_constraints.len() as u32)
                 .collect(),
-            constraint_types: repeat(ConstraintType::Aim)
-                .take(data.aim_constraints.len())
-                .chain(repeat(ConstraintType::Orient).take(data.orient_constraints.len()))
+            constraint_types: repeat_n(ConstraintType::Aim, data.aim_constraints.len())
+                .chain(repeat_n(
+                    ConstraintType::Orient,
+                    data.orient_constraints.len(),
+                ))
                 .collect(),
         }
     }

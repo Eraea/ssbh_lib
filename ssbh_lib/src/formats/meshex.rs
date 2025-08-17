@@ -123,10 +123,9 @@ impl SsbhWrite for MeshEx {
             .unwrap_or(0u32);
 
         if entry_count != entry_flag_count {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
-                format!("Inconsistent entry count: {entry_count} != {entry_flag_count}"),
-            ));
+            return Err(std::io::Error::other(format!(
+                "Inconsistent entry count: {entry_count} != {entry_flag_count}"
+            )));
         }
 
         // Ensure the next pointer won't point inside this struct.
@@ -153,9 +152,8 @@ impl SsbhWrite for MeshEx {
         self.unk1.ssbh_write(writer, data_ptr)?;
 
         // Meshex files are aligned to 16 bytes.
-        let round_up = |value, n| ((value + n - 1) / n) * n;
         let size = writer.seek(SeekFrom::End(0))?;
-        let new_size = round_up(size, 16);
+        let new_size = size.next_multiple_of(16);
         writer.write_all(&vec![0u8; (new_size - size) as usize])?;
 
         // Write the file length.

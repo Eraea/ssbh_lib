@@ -585,11 +585,6 @@ pub trait Version {
     fn major_minor_version(&self) -> (u16, u16);
 }
 
-pub(crate) fn round_up(value: u64, n: u64) -> u64 {
-    // Find the next largest multiple of n.
-    ((value + n - 1) / n) * n
-}
-
 pub(crate) fn write_relative_offset<W: Write + Seek>(
     writer: &mut W,
     data_ptr: &u64,
@@ -613,7 +608,7 @@ fn write_rel_ptr_aligned_specialized<
     match data {
         Some(value) => {
             // Calculate the relative offset.
-            *data_ptr = round_up(*data_ptr, alignment);
+            *data_ptr = data_ptr.next_multiple_of(alignment);
             write_relative_offset(writer, data_ptr)?;
 
             // Write the data at the specified offset.
@@ -627,7 +622,7 @@ fn write_rel_ptr_aligned_specialized<
             // Types with relative offsets will already increment the data pointer.
             let current_pos = writer.stream_position()?;
             if current_pos > *data_ptr {
-                *data_ptr = round_up(current_pos, alignment);
+                *data_ptr = current_pos.next_multiple_of(alignment);
             }
 
             writer.seek(SeekFrom::Start(pos_after_offset))?;
@@ -688,17 +683,14 @@ where
                 }
 
                 // Calculate the absolute offset.
-                *data_ptr = round_up(*data_ptr, alignment);
+                *data_ptr = data_ptr.next_multiple_of(alignment);
 
                 let offset = P::try_from(*data_ptr).map_err(|_| {
-                    std::io::Error::new(
-                        std::io::ErrorKind::Other,
-                        format!(
-                            "Failed to convert offset {} to a pointer with {} bytes.",
-                            data_ptr,
-                            std::mem::size_of::<P>()
-                        ),
-                    )
+                    std::io::Error::other(format!(
+                        "Failed to convert offset {} to a pointer with {} bytes.",
+                        data_ptr,
+                        std::mem::size_of::<P>()
+                    ))
                 })?;
                 P::ssbh_write(&offset, writer, data_ptr)?;
 
@@ -712,7 +704,7 @@ where
                 // Types with relative offsets will already increment the data pointer.
                 let current_pos = writer.stream_position()?;
                 if current_pos > *data_ptr {
-                    *data_ptr = round_up(current_pos, alignment);
+                    *data_ptr = current_pos.next_multiple_of(alignment);
                 }
 
                 writer.seek(SeekFrom::Start(pos_after_offset))?;
