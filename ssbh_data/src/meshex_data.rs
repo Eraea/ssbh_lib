@@ -56,7 +56,7 @@ impl MeshExData {
         Self {
             mesh_object_groups: objects
                 .iter()
-                .group_by(|o| &o.name)
+                .chunk_by(|o| &o.name)
                 .into_iter()
                 .map(|(name, group)| {
                     // TODO: Find a cleaner way to collect points.

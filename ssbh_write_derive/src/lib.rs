@@ -11,7 +11,7 @@ use syn::{
     parenthesized,
     parse::{Parse, ParseStream},
     parse_macro_input, Attribute, Data, DataStruct, DeriveInput, Fields, FieldsNamed,
-    FieldsUnnamed, Generics, Ident, LitByteStr, MetaNameValue,
+    FieldsUnnamed, Generics, Ident, LitByteStr, LitInt,
 };
 
 #[derive(Default)]
@@ -49,20 +49,14 @@ fn get_repr(attr: &Attribute) -> Option<Ident> {
     }
 }
 
-fn get_usize_arg(m: &MetaNameValue) -> Option<usize> {
-    if let syn::Lit::Int(value) = &m.lit {
-        Some(value.base10_parse().unwrap())
-    } else {
-        None
-    }
+fn get_usize_arg(content: syn::parse::ParseStream<'_>) -> Result<usize, syn::Error> {
+    let lit: LitInt = content.parse()?;
+    lit.base10_parse()
 }
 
-fn get_byte_string_arg(m: &MetaNameValue) -> Option<LitByteStr> {
-    if let syn::Lit::ByteStr(value) = &m.lit {
-        Some(value.clone())
-    } else {
-        None
-    }
+fn get_byte_string_arg(content: syn::parse::ParseStream<'_>) -> Result<LitByteStr, syn::Error> {
+    let lit: LitByteStr = content.parse()?;
+    Ok(lit)
 }
 
 #[proc_macro_derive(SsbhWrite, attributes(ssbhwrite))]
@@ -270,24 +264,30 @@ fn get_write_options(attrs: &[Attribute]) -> WriteOptions {
     let mut write_options = WriteOptions::default();
 
     for attr in attrs {
-        if attr.path.is_ident("ssbhwrite") {
+        if attr.path().is_ident("ssbhwrite") {
             if let Some(repr) = get_repr(attr) {
                 // This uses a different syntax than named values.
                 // ex: #[ssbhwrite(repr(u32)]
                 write_options.repr = Some(repr);
-            } else if let Ok(syn::Meta::List(l)) = attr.parse_meta() {
-                for nested in l.nested {
+            } else {
+                let _ = attr.parse_nested_meta(|meta| {
                     // ex: #[ssbhwrite(pad_after = 16, align_after = 8)]
-                    if let syn::NestedMeta::Meta(syn::Meta::NameValue(v)) = nested {
-                        match v.path.get_ident().unwrap().to_string().as_str() {
-                            "pad_after" => write_options.pad_after = get_usize_arg(&v),
-                            "align_after" => write_options.align_after = get_usize_arg(&v),
-                            "alignment" => write_options.alignment = get_usize_arg(&v),
-                            "magic" => write_options.magic = get_byte_string_arg(&v),
-                            _ => panic!("Unrecognized attribute"),
+                    match meta.path.get_ident().unwrap().to_string().as_str() {
+                        "pad_after" => {
+                            write_options.pad_after = Some(get_usize_arg(meta.value()?)?)
                         }
+                        "align_after" => {
+                            write_options.align_after = Some(get_usize_arg(meta.value()?)?)
+                        }
+                        "alignment" => {
+                            write_options.alignment = Some(get_usize_arg(meta.value()?)?)
+                        }
+                        "magic" => write_options.magic = Some(get_byte_string_arg(meta.value()?)?),
+                        _ => panic!("Unrecognized attribute"),
                     }
-                }
+
+                    Ok(())
+                });
             }
         }
     }
