@@ -362,6 +362,7 @@ pub enum AttributeUsageV9 {
 pub enum AttributeUsageV8 {
     Position = 0,
     Normal = 1,
+    Unk2 = 2,
     Tangent = 3,
     TextureCoordinate = 4,
     ColorSet = 8,
